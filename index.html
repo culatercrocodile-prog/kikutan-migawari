@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>キクタン身のまわり編</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--fg:#1f2430;--sub:#6b7280;--pri:#2563eb;--ok:#16a34a;--ng:#dc2626;--line:#e5e7eb}
+@media(prefers-color-scheme:dark){:root{--bg:#12141a;--card:#1c1f28;--fg:#e8eaf0;--sub:#9aa1b0;--pri:#5b8cff;--ok:#34d399;--ng:#f87171;--line:#2b303c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;line-height:1.5}
+#app{max-width:560px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+h1{font-size:20px;margin:4px 0 14px}
+.bar{display:flex;justify-content:space-between;color:var(--sub);font-size:13px;margin-bottom:8px}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--pri)}
+.word{font-size:36px;font-weight:700;text-align:center;margin:18px 0;word-break:break-word}
+.mean{font-size:20px;text-align:center;margin:8px 0 14px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:12px;padding:14px 16px;width:100%;margin-top:10px;font-size:16px;text-align:left}
+button.pri{background:var(--pri);color:#fff;border-color:var(--pri);text-align:center;font-weight:700}
+button.c{text-align:center}
+button.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+button.ng{background:var(--ng);color:#fff;border-color:var(--ng)}
+button.dk{color:var(--sub);text-align:center}
+button:disabled{opacity:.9;cursor:default}
+.row{display:flex;gap:10px}.row button{flex:1}
+.stat{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.sub{color:var(--sub);font-size:13px}
+.list div{padding:6px 0;border-bottom:1px solid var(--line);font-size:15px}
+.big{font-size:44px;font-weight:800;text-align:center}
+.small-btn{width:auto;padding:6px 12px;font-size:13px;margin:0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const WORDS=/*DATA*/[[1,"bangs","前髪"],[2,"forehead","額"],[3,"temple","こめかみ"],[4,"eyebrow","まゆ"],[5,"eyelid","まぶた"],[6,"eyelashes","まつげ"],[7,"earlobe","耳たぶ"],[8,"mustache","口ひげ"],[9,"beard","あごひげ"],[10,"sideburns","もみあげ"],[11,"jaw","あご"],[12,"chin","あご先"],[13,"thumb","親指"],[14,"index finger","人差し指"],[15,"middle finger","中指"],[16,"ring finger","薬指"],[17,"little finger","小指"],[18,"nail","爪"],[19,"nape","うなじ"],[20,"armpit","わきの下"],[21,"upper arm","二の腕"],[22,"forearm","前腕"],[23,"joint","関節"],[24,"palm","手のひら"],[25,"lung","肺"],[26,"chest","胸"],[27,"abdomen","おなか"],[28,"navel","おへそ"],[29,"back","背中"],[30,"lower back","腰"],[31,"buttocks","お尻"],[32,"thigh","もも"],[33,"calf","ふくらはぎ"],[34,"shin","向こうずね"],[35,"ankle","足首"],[36,"big toe","親指"],[37,"sibling","きょうだい"],[38,"half brother","異父"],[39,"stepfather","継父"],[40,"homemaker","主婦（夫）"],[41,"dependent","扶養家族"],[42,"toddler","歩き始めの子"],[43,"wrinkle","しわ"],[44,"dimple","えくぼ"],[45,"freckles","そばかす"],[46,"callus","たこ"],[47,"suntan","日焼け"],[48,"mole","ほくろ"],[49,"relative","親戚"],[50,"cousin","いとこ"],[51,"father-in-law","義理の父"],[52,"nephew","おい"],[53,"niece","めい"],[54,"grandparents","祖父母"],[55,"diaper","おむつ"],[56,"baby wipe","お尻ふき"],[57,"baby carrier","だっこひも"],[58,"pacifier","おしゃぶり"],[59,"bib","よだれかけ"],[60,"rattle","ガラガラ"],[61,"appetite","食欲"],[62,"weight","体重"],[63,"scale","体重計"],[64,"body fat","体脂肪"],[65,"constipation","便秘"],[66,"high blood pressure","高血圧"],[67,"first-aid kit","救急箱"],[68,"thermometer","体温計"],[69,"pain reliever","痛み止め"],[70,"Band-Aid","ばんそうこう"],[71,"gauze","ガーゼ"],[72,"ointment","軟こう"],[73,"chill","寒け"],[74,"cough","せき"],[75,"runny nose","鼻水"],[76,"sneeze","くしゃみ"],[77,"sore throat","のどの痛み"],[78,"diarrhea","下痢"],[79,"nasal congestion","鼻詰まり"],[80,"fever","熱"],[81,"temperature","体温"],[82,"flu","インフルエンザ"],[83,"hay fever","花粉症"],[84,"asthma","ぜんそく"],[85,"pimple","にきび"],[86,"wart","いぼ"],[87,"sunburn","日焼け"],[88,"insect bite","虫刺され"],[89,"athlete's foot","水虫"],[90,"blister","水ぶくれ"],[91,"bruise","あざ"],[92,"rash","発疹"],[93,"chicken pox","水ぼうそう"],[94,"measles","はしか"],[95,"scrape","擦り傷"],[96,"scab","かさぶた"],[97,"cavity","虫歯"],[98,"braces","歯列矯正器"],[99,"filling","詰め物"],[100,"gum","歯茎"],[101,"plaque","歯垢"],[102,"wisdom tooth","親知らず"],[103,"heatstroke","熱中症"],[104,"dementia","認知症"],[105,"depression","うつ病"],[106,"stiff neck","肩凝り"],[107,"cramps","生理痛"],[108,"backache","腰痛"],[109,"pill","錠剤"],[110,"antibiotics","抗生物質"],[111,"eye drops","目薬"],[112,"nasal spray","点鼻薬"],[113,"throat lozenge","のどあめ"],[114,"sunscreen","日焼け止め"],[115,"hearing aid","補聴器"],[116,"cast","ギプス"],[117,"sling","三角巾"],[118,"cane","つえ"],[119,"crutch","松葉づえ"],[120,"wheelchair","車いす"],[121,"ballpoint pen","ボールペン"],[122,"fountain pen","万年筆"],[123,"highlighter","蛍光ペン"],[124,"marker","マジックペン"],[125,"mechanical pencil","シャーペン"],[126,"pencil sharpener","鉛筆削り"],[127,"eraser","消しゴム"],[128,"correction fluid","修正液"],[129,"memo pad","メモ帳"],[130,"Post-it","付箋紙"],[131,"letter paper","便箋"],[132,"envelope","封筒"],[133,"paper clip","クリップ"],[134,"binder clip","ダブルクリップ"],[135,"clear tape","セロテープ"],[136,"double-sided tape","両面テープ"],[137,"packing tape","ガムテープ"],[138,"glue","接着剤"],[139,"stapler","ホチキス"],[140,"staple","針"],[141,"ruler","定規"],[142,"rubber band","輪ゴム"],[143,"scissors","はさみ"],[144,"thumbtack","画びょう"],[145,"bottle opener","栓抜き"],[146,"can opener","缶切り"],[147,"corkscrew","コルク抜き"],[148,"jar","瓶"],[149,"lid","ふた"],[150,"scale","はかり"],[151,"aluminum foil","アルミホイル"],[152,"plastic wrap","ラップ"],[153,"ladle","おたま"],[154,"paring knife","果物ナイフ"],[155,"peeler","皮むき器"],[156,"rolling pin","めん棒"],[157,"spatula","フライ返し"],[158,"strainer","ざる"],[159,"whisk","泡立て器"],[160,"grater","おろし器"],[161,"garlic press","ニンニクつぶし"],[162,"measuring cup","計量カップ"],[163,"kitchen knife","包丁"],[164,"cutting board","まな板"],[165,"kettle","やかん"],[166,"frying pan","フライパン"],[167,"pot","鍋"],[168,"pressure cooker","圧力鍋"],[169,"saucepan","片手鍋"],[170,"steamer","蒸し器"],[171,"wok","中華鍋"],[172,"dish detergent","食器用洗剤"],[173,"dish rack","水切りかご［ラック］"],[174,"dish towel","ふきん"],[175,"pepper shaker","コショウ入れ"],[176,"sugar bowl","砂糖入れ"],[177,"place mat","ランチョンマット"],[178,"rice bowl","茶碗"],[179,"platter","大皿"],[180,"toothpick","つまようじ"],[181,"broom","ほうき"],[182,"dustpan","ちり取り"],[183,"dust cloth","そうきん"],[184,"feather duster","はたき"],[185,"scrub brush","たわし"],[186,"rubber gloves","ゴム手袋"],[187,"laundry detergent","洗濯洗剤"],[188,"bleach","漂白剤"],[189,"fabric softener","柔軟剤"],[190,"starch","洗濯のり"],[191,"hamper","洗濯かご"],[192,"clothespin","洗濯ばさみ"],[193,"comb","くし"],[194,"bobby pin","ヘアピン"],[195,"cosmetics","化粧品"],[196,"blush","ほお紅"],[197,"cotton swab","綿棒"],[198,"razor","かみそり"],[199,"body wash","ボディーソープ"],[200,"nail clippers","爪切り"],[201,"nail polish","マニキュア液"],[202,"tissue","ティッシュペーパー"],[203,"wipe","ウエットティッシュ"],[204,"tweezers","毛抜き"],[205,"dress","ワンピース"],[206,"dress shirt","ワイシャツ"],[207,"collar","襟"],[208,"hem","すそ"],[209,"pants","ズボン"],[210,"shorts","短パン"],[211,"knee socks","ハイソックス"],[212,"undershirt","肌着"],[213,"underpants","パンツ"],[214,"boxer shorts","トランクス"],[215,"pantyhose","パンスト"],[216,"long johns","ももひき"],[217,"sleeveless","ノースリーブの"],[218,"short-sleeved","半袖の"],[219,"three-quarter-sleeved","七分袖の"],[220,"crew-neck","丸首の"],[221,"knee-length","ひざ丈の"],[222,"one-size-fits-all","フリーサイズの"],[223,"floral","花柄の"],[224,"checked","チェック柄の"],[225,"plaid","格子柄の"],[226,"striped","しま模様の"],[227,"polka-dotted","水玉模様の"],[228,"plain","無地の"],[229,"pierced earrings","ピアス"],[230,"earmuffs","耳当て"],[231,"earplugs","耳栓"],[232,"scarf","マフラー"],[233,"flip-flops","ビーチサンダル"],[234,"rain boots","長靴"],[235,"purse","ハンドバッグ"],[236,"wallet","財布"],[237,"coin purse","小銭入れ"],[238,"driver's license","運転免許証"],[239,"health insurance card","健康保険証"],[240,"personal organizer","システム手帳"],[241,"pillow","枕"],[242,"pillowcase","枕カバー"],[243,"nightstand","サイドテーブル"],[244,"bedspread","ベッドカバー"],[245,"comforter","掛け布団"],[246,"blanket","毛布"],[247,"fitted sheet","ボックスシーツ"],[248,"bunk beds","二段ベッド"],[249,"bookcase","本棚"],[250,"dresser","たんす"],[251,"vanity","化粧台"],[252,"full-length mirror","姿見"],[253,"cradle","揺りかご"],[254,"crib","ベビーベッド"],[255,"playpen","ベビーサークル"],[256,"walker","歩行器"],[257,"cubby","整理棚"],[258,"toy chest","おもちゃ箱"],[259,"drapes","カーテン"],[260,"rug","敷物"],[261,"love seat","2人掛けソファ"],[262,"armchair","ひじ掛けいす"],[263,"easy chair","安楽いす"],[264,"throw pillow","クッション"],[265,"end table","サイドテーブル"],[266,"magazine holder","マガジンラック"],[267,"wastebasket","くずかご"],[268,"vacuum cleaner","掃除機"],[269,"air conditioner","エアコン"],[270,"remote control","リモコン"],[271,"thermometer","温度計"],[272,"heater","ストーブ"],[273,"fan","扇風機"],[274,"air purifier","空気清浄機"],[275,"humidifier","加湿器"],[276,"outlet","コンセント"],[277,"kitchen cabinet","食器棚"],[278,"kitchen counter","調理台"],[279,"microwave","電子レンジ"],[280,"blender","ミキサー"],[281,"toaster oven","オーブントースター"],[282,"rice cooker","炊飯器"],[283,"refrigerator","冷蔵庫"],[284,"freezer","冷凍室"],[285,"dishwasher","食洗機"],[286,"washer","洗濯機"],[287,"dryer","乾燥機"],[288,"iron","アイロン"],[289,"cellphone","携帯電話"],[290,"answering machine","留守番電話"],[291,"charger","充電器"],[292,"battery","電池"],[293,"laptop","ノートパソコン"],[294,"peripheral","周辺機器"],[295,"camcorder","ビデオカメラ"],[296,"calculator","電卓"],[297,"flashlight","懐中電灯"],[298,"fluorescent light","蛍光灯"],[299,"light bulb","電球"],[300,"extension cord","延長コード"],[301,"cucumber","キュウリ"],[302,"green onion","ネギ"],[303,"Chinese cabbage","ハクサイ"],[304,"spinach","ホウレンソウ"],[305,"eggplant","ナス"],[306,"bok choy","チンゲンサイ"],[307,"green pepper","ピーマン"],[308,"turnip","カブ"],[309,"bamboo shoot","タケノコ"],[310,"mushroom","キノコ"],[311,"burdock root","ゴボウ"],[312,"lotus root","レンコン"],[313,"Chinese chives","ニラ"],[314,"bean sprouts","モヤシ"],[315,"sweet potato","サツマイモ"],[316,"chili pepper","トウガラシ"],[317,"pea","エンドウ豆"],[318,"green bean","サヤインゲン"],[319,"chestnut","クリ"],[320,"pickled plum","梅干し"],[321,"tangerine","ミカン"],[322,"pear","洋ナシ"],[323,"persimmon","カキ"],[324,"watermelon","スイカ"],[325,"sardine","イワシ"],[326,"saury","サンマ"],[327,"horse mackerel","アジ"],[328,"flounder","カレイ"],[329,"tuna","マグロ"],[330,"sea bream","タイ"],[331,"bonito","カツオ"],[332,"eel","ウナギ"],[333,"blowfish","フグ"],[334,"mackerel","サバ"],[335,"yellowtail","ブリ"],[336,"trout","マス"],[337,"catfish","ナマズ"],[338,"squid","イカ"],[339,"octopus","タコ"],[340,"sea urchin","ウニ"],[341,"shrimp","エビ"],[342,"crab","カニ"],[343,"jellyfish","クラゲ"],[344,"scallop","ホタテガイ"],[345,"clam","ハマグリ"],[346,"oyster","カキ"],[347,"abalone","アワビ"],[348,"salmon roe","イクラ"],[349,"bun","パン"],[350,"croissant","クロワッサン"],[351,"pancake","ホットケーキ"],[352,"cream puff","シュークリーム"],[353,"pudding","プリン"],[354,"margarine","マーガリン"],[355,"bottled water","ミネラルウォーター"],[356,"soda","炭酸ジュース"],[357,"hot chocolate","ココア"],[358,"herbal tea","ハーブティー"],[359,"iced tea","アイスティー"],[360,"tea with lemon","レモンティー"],[361,"front door","玄関"],[362,"intercom","インターホン"],[363,"buzzer","ブザー"],[364,"doorbell","チャイム"],[365,"peephole","のぞき穴"],[366,"shoe cabinet","下駄箱"],[367,"back door","勝手口"],[368,"stairs","階段"],[369,"handrail","手すり"],[370,"attic","屋根裏"],[371,"roof","屋根"],[372,"shingle","屋根板"],[373,"ceiling","天井"],[374,"smoke detector","煙感知器"],[375,"fire extinguisher","消火器"],[376,"shutter","雨戸"],[377,"window screen","網戸"],[378,"gutter","雨どい"],[379,"stove","レンジ"],[380,"oven","オーブン"],[381,"ventilation fan","換気扇"],[382,"sink","流し"],[383,"faucet","蛇口"],[384,"drain","排水口"],[385,"mailbox","郵便受け"],[386,"hedge","生け垣"],[387,"storage locker","物置"],[388,"lawn","芝生"],[389,"flower bed","花壇"],[390,"garbage can","ごみ箱"],[391,"insect repellent","虫よけスプレー"],[392,"soil","土"],[393,"fertilizer","肥料"],[394,"seed","種"],[395,"seedling","苗"],[396,"weed","雑草"],[397,"watering can","じょうろ"],[398,"trowel","スコップ"],[399,"pruning shears","剪定ばさみ"],[400,"hedge clippers","刈り込みばさみ"],[401,"rake","熊手"],[402,"stepladder","脚立"],[403,"stroller","ベビーカー"],[404,"tricycle","三輪車"],[405,"bike","自転車"],[406,"moped","原付"],[407,"motorcycle","オートバイ"],[408,"camper","キャンピングカー"],[409,"windshield","フロントガラス"],[410,"steering wheel","ハンドル"],[411,"horn","クラクション"],[412,"rearview mirror","バックミラー"],[413,"parking brake","サイドブレーキ"],[414,"speedometer","速度計"],[415,"saw","のこぎり"],[416,"hammer","金づち"],[417,"tape measure","巻き尺"],[418,"pliers","ペンチ"],[419,"screw","ねじ"],[420,"screwdriver","ドライバー"],[421,"houseplant","観葉植物"],[422,"bulb","球根"],[423,"bud","つぼみ"],[424,"petal","花びら"],[425,"stem","茎"],[426,"thorn","とげ"],[427,"chrysanthemum","キク"],[428,"orchid","ラン"],[429,"hydrangea","アジサイ"],[430,"morning glory","アサガオ"],[431,"dandelion","タンポポ"],[432,"azalea","ツツジ"],[433,"lily","ユリ"],[434,"narcissus","スイセン"],[435,"iris","アヤメ"],[436,"camellia","ツバキ"],[437,"holly","ヒイラギ"],[438,"cactus","サボテン"],[439,"cabbage white","モンシロチョウ"],[440,"swallowtail","アゲハチョウ"],[441,"moth","ガ"],[442,"dragonfly","トンボ"],[443,"honeybee","ミツバチ"],[444,"wasp","スズメバチ"],[445,"cicada","セミ"],[446,"ladybug","テントウムシ"],[447,"praying mantis","カマキリ"],[448,"grasshopper","バッタ"],[449,"cricket","コオロギ"],[450,"spider","クモ"],[451,"fly","ハエ"],[452,"mosquito","カ"],[453,"flea","ノミ"],[454,"tick","ダニ"],[455,"cockroach","ゴキブリ"],[456,"termite","シロアリ"],[457,"puppy","子イヌ"],[458,"kitten","子ネコ"],[459,"parakeet","インコ"],[460,"parrot","オウム"],[461,"pigeon","ハト"],[462,"sparrow","スズメ"],[463,"crow","カラス"],[464,"rat","ネズミ"],[465,"lizard","トカゲ"],[466,"snail","カタツムリ"],[467,"slug","ナメクジ"],[468,"worm","ミミズ"],[469,"spring equinox","春分"],[470,"summer solstice","夏至"],[471,"weather forecast","天気予報"],[472,"warning","警報"],[473,"high","最高気温"],[474,"humidity","湿気"],[475,"shower","にわか雨"],[476,"sleet","みぞれ"],[477,"snowstorm","吹雪"],[478,"thunderstorm","雷雨"],[479,"heat wave","猛暑"],[480,"Indian summer","小春日和"]]/*END*/;
+const BATCH=20, KEY='kikutan-migawari-v1';
+const byId=new Map(WORDS.map(w=>[w[0],w]));
+const ALL_IDS=WORDS.map(w=>w[0]);
+const $=document.getElementById('app');
+
+let S=load();
+function fresh(){return{lap:1,cands:ALL_IDS.slice(),pos:0,pool:[],thisUnknown:[],known:[],stats:{c:0,t:0},phase:'home',idx:0,order:[],answers:[],tq:null}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.lap){if(!s.known){
+  const all=new Set(s.cands);
+  s.known=s.lap===1?s.cands.slice(0,s.pos).filter(i=>!s.thisUnknown.includes(i)&&!s.pool.includes(i)):ALL_IDS.filter(i=>!all.has(i));
+}return s}}catch(e){}return fresh()}
+const candsFor=()=>{const k=new Set(S.known),c=ALL_IDS.filter(i=>!k.has(i));return c.length?c:ALL_IDS.slice()};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function speak(t){
+  if(!('speechSynthesis' in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u)}catch(e){}
+}
+function header(label,i,n){
+  return `<div class="bar"><span>${label}</span><span>${i} / ${n}</span></div><div class="prog"><i style="width:${n?i/n*100:0}%"></i></div>`;
+}
+
+/* ---------- 画面 ---------- */
+function render(){
+  ({home,screen:rScreen,study:rStudy,test:rTest,result:rResult}[S.phase]||home)();
+  window.scrollTo(0,0);
+}
+
+function home(){
+  const acc=S.stats.t?Math.round(S.stats.c/S.stats.t*100):0;
+  const started=S.pos>0||S.pool.length>0||S.lap>1;
+  $.innerHTML=`<h1>キクタン身のまわり編</h1>
+  <div class="card">
+    <div class="stat"><span>周回</span><b>${S.lap}周目</b></div>
+    <div class="stat"><span>選別の位置</span><b>${Math.min(S.pos,S.cands.length)} / ${S.cands.length}語</b></div>
+    <div class="stat"><span>最初から知っている語（1周目で判定）</span><b>${S.known.length}語</b></div>
+    <div class="stat"><span>復習待ちの語</span><b>${S.pool.length}語</b></div>
+    <div class="stat"><span>累積正答率</span><b>${acc}%（${S.stats.c}/${S.stats.t}）</b></div>
+  </div>
+  <button class="pri" id="go">${started?'続きから':'はじめる'}</button>
+  <button class="dk" id="resetKnown" ${S.known.length?'':'disabled'}>「知ってる」の分類だけリセット</button>
+  <button class="dk" id="reset">進捗をリセット</button>`;
+  document.getElementById('go').onclick=()=>{S.phase='screen';save();render()};
+  document.getElementById('resetKnown').onclick=()=>{
+    if(!confirm('「知っている」に分類した'+S.known.length+'語を元に戻し、再び出題対象にしますか？（周回・進捗は保持）'))return;
+    const cur=S.cands[S.pos];S.known=[];S.cands=ALL_IDS.slice();
+    S.pos=cur===undefined?S.cands.length:S.cands.filter(i=>i<cur).length;
+    save();render();
+  };
+  document.getElementById('reset').onclick=()=>{if(confirm('進捗をすべて消してよいですか？')){S=fresh();save();render()}};
+}
+
+function rScreen(){
+  if(S.pool.length>=BATCH||S.pos>=S.cands.length)return endScreen();
+  const w=byId.get(S.cands[S.pos]);
+  $.innerHTML=header(`${S.lap}周目・選別（分からない語 ${S.pool.length}/${BATCH}）`,S.pos+1,S.cands.length)+
+  `<div class="card"><div class="word">${esc(w[1])}</div>
+   <button class="c" id="pl">🔊 発音</button></div>
+   <div class="row"><button class="c pri" id="know">知ってる</button><button class="c ng" id="dk">分からない</button></div>
+   <button class="dk" id="home">中断してホームへ</button>`;
+  document.getElementById('pl').onclick=()=>speak(w[1]);
+  document.getElementById('know').onclick=()=>{if(S.lap===1&&!S.known.includes(w[0]))S.known.push(w[0]);S.pos++;save();render()};
+  document.getElementById('dk').onclick=()=>{
+    if(!S.pool.includes(w[0]))S.pool.push(w[0]);
+    if(!S.thisUnknown.includes(w[0]))S.thisUnknown.push(w[0]);
+    S.pos++;save();render();
+  };
+  document.getElementById('home').onclick=()=>{S.phase='home';save();render()};
+}
+
+function endScreen(){
+  if(S.pool.length===0){advanceLapIfDone();S.phase='home';save();return render()}
+  S.phase='study';S.idx=0;S.batch=S.pool.slice(0,BATCH);S.order=S.batch.slice();save();render();
+}
+
+function rStudy(){
+  const id=S.order[S.idx],w=byId.get(id),n=S.order.length;
+  $.innerHTML=header('学習モード',S.idx+1,n)+
+  `<div class="card"><div class="word">${esc(w[1])}</div><div class="mean">${esc(w[2])}</div>
+   <button class="c" id="pl">🔊 もう一度聞く</button>
+   <button class="c dk" id="mute">${S.mute?'🔇 自動音声：オフ（タップでオンに）':'🔊 自動音声：オン（タップでオフに）'}</button></div>
+   <div class="row"><button class="c" id="prev" ${S.idx?'':'disabled'}>← 前へ</button>
+   <button class="c pri" id="next">${S.idx===n-1?'テストへ':'次へ →'}</button></div>
+   <button class="dk" id="redo" ${S.idx?'':'disabled'}>↺ 学習を最初からやり直す</button>`;
+  if(!S.mute)speak(w[1]);
+  document.getElementById('pl').onclick=()=>speak(w[1]);
+  document.getElementById('mute').onclick=()=>{S.mute=!S.mute;if(S.mute&&'speechSynthesis' in window)speechSynthesis.cancel();save();render()};
+  document.getElementById('redo').onclick=()=>{S.idx=0;save();render()};
+  document.getElementById('prev').onclick=()=>{S.idx--;save();render()};
+  document.getElementById('next').onclick=()=>{
+    if(S.idx===n-1){S.phase='test';S.idx=0;S.order=shuffle(S.batch);S.answers=[];S.tq=null;}
+    else S.idx++;
+    save();render();
+  };
+}
+
+/* 選択肢生成: 意味の書き出しが同じ型で、番号が近い語を優先 */
+function kind(m){const t=m.replace(/^[～〜]/,'');return (m[0]==='～'||m[0]==='〜'?'~':'')+t.slice(0,1)+(/す?る/.test(m.slice(-3))?'v':'')}
+function makeChoices(id){
+  const w=byId.get(id),k=kind(w[2]);
+  const others=ALL_IDS.filter(i=>i!==id&&byId.get(i)[2]!==w[2]);
+  const score=i=>{const same=kind(byId.get(i)[2])===k?0:1;return same*10000+Math.abs(i-id)+Math.random()*40};
+  const near=others.map(i=>[score(i),i]).sort((a,b)=>a[0]-b[0]).slice(0,12).map(x=>x[1]);
+  const picks=shuffle(near).slice(0,3);
+  return shuffle([id,...picks]);
+}
+
+function rTest(){
+  const n=S.order.length;
+  if(S.idx>=n)return finishTest();
+  const id=S.order[S.idx],w=byId.get(id);
+  if(!S.tq||S.tq.id!==id){S.tq={id,ch:makeChoices(id),sel:null};save()}
+  const q=S.tq,done=q.sel!==null;
+  let btns=q.ch.map(c=>{
+    let cls='';if(done){if(c===id)cls='ok';else if(c===q.sel)cls='ng'}
+    return `<button class="${cls}" data-id="${c}" ${done?'disabled':''}>${esc(byId.get(c)[2])}</button>`;
+  }).join('');
+  btns+=`<button class="dk ${done&&q.sel===0?'ng':''}" data-id="0" ${done?'disabled':''}>分からない</button>`;
+  $.innerHTML=header('テスト',S.idx+1,n)+
+  `<div class="card"><div class="word">${esc(w[1])}</div>
+   <div style="text-align:center"><button class="small-btn c" id="pl">🔊</button></div></div>${btns}`+
+  (done?`<button class="pri" id="next">${S.idx===n-1?'結果を見る':'次へ →'}</button>`:'');
+  document.getElementById('pl').onclick=()=>speak(w[1]);
+  $.querySelectorAll('button[data-id]').forEach(b=>b.onclick=()=>{
+    q.sel=+b.dataset.id;S.answers.push({id,ok:q.sel===id});save();render();
+  });
+  if(done)document.getElementById('next').onclick=()=>{S.idx++;S.tq=null;save();render()};
+}
+
+function finishTest(){
+  const ok=S.answers.filter(a=>a.ok).length;
+  S.stats.c+=ok;S.stats.t+=S.answers.length;
+  S.pool=S.answers.filter(a=>!a.ok).map(a=>a.id).concat(S.pool.filter(i=>!S.batch.includes(i)));
+  S.lastScore={ok,n:S.answers.length};
+  S.phase='result';save();render();
+}
+
+function rResult(){
+  const {ok,n}=S.lastScore,wrong=S.answers.filter(a=>!a.ok).map(a=>a.id);
+  const finished=S.pos>=S.cands.length;
+  $.innerHTML=`<h1>テスト結果</h1><div class="card"><div class="big">${ok} / ${n}</div>
+  <div class="sub" style="text-align:center">正答率 ${n?Math.round(ok/n*100):0}%</div></div>
+  ${wrong.length?`<div class="card"><b>間違い・分からなかった語（${wrong.length}語）</b><div class="list">${
+    wrong.map(i=>{const w=byId.get(i);return `<div><b>${esc(w[1])}</b>　${esc(w[2])}</div>`}).join('')}</div>
+    <div class="sub" style="margin-top:8px">次のラウンドの${BATCH}語に含まれます。</div></div>`:''}
+  <button class="pri" id="next">${finished&&!S.pool.length?'次の周へ':'次の単語を選ぶ'}</button>`;
+  document.getElementById('next').onclick=()=>{
+    advanceLapIfDone();
+    S.phase='screen';save();render();
+  };
+}
+
+/* 選別対象を最後まで見終わり、持ち越しも無ければ次の周へ */
+function advanceLapIfDone(){
+  if(S.pos<S.cands.length||S.pool.length>0)return;
+  S.lap++;
+  S.cands=candsFor();
+  S.thisUnknown=[];S.pos=0;
+}
+
+render();
+</script>
+</body>
+</html>
